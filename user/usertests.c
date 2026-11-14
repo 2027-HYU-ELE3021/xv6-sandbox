@@ -3024,6 +3024,29 @@ unlinkcwd(char *s)
   }
 }
 
+void
+getppidtest(char *s)
+{
+  int me = getpid();
+  int pid = fork();
+
+  if (pid < 0) {
+    printf("%s: fork failed\n", s);
+    exit(1);
+  }
+  if (pid == 0) {
+    if (getppid() != me) {
+      printf("%s: child getppid() is %d, expected %d\n", s, getppid(), me);
+      exit(1);
+    }
+    exit(0);
+  }
+
+  int xst;
+  wait(&xst);
+  exit(xst);
+}
+
 struct test {
   void (*f)(char *);
   char *s;
@@ -3097,6 +3120,7 @@ struct test {
   {lazy_sbrk, "lazy_sbrk"},
   {partial_write, "partial_write"},
   {unlinkcwd, "unlinkcwd"},
+  {getppidtest, "getppidtest"},
   {0, 0},
 };
 
